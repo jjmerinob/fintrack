@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+/* Toggle dark mode by adding the `dark` class to <html>, in sync with Angular Material. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme static {
+  /* Semantic finance colors used across dashboard, transactions and charts.
+     `static` keeps them emitted even before any component references them. */
+  --color-income: #10b981;
+  --color-expense: #f87171;
+}
