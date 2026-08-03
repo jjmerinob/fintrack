@@ -1,1 +1,42 @@
-<p>signup works!</p>
+<app-auth-layout heading="Create your account" subheading="Start tracking your finances in minutes">
+  <form (submit)="onSubmit($event)" novalidate class="flex flex-col gap-5">
+    <app-text-field [field]="signupForm.fullName" label="Full name" autocomplete="name" />
+
+    <app-text-field [field]="signupForm.email" label="Email" type="email" autocomplete="email" />
+
+    <app-password-field
+      [field]="signupForm.password"
+      label="Password"
+      autocomplete="new-password"
+    />
+
+    <app-password-field
+      [field]="signupForm.confirmPassword"
+      label="Confirm password"
+      autocomplete="new-password"
+    />
+
+    @if (serverError()) {
+      <p
+        role="alert"
+        class="rounded-lg px-3 py-2 text-sm text-error"
+        style="background-color: color-mix(in srgb, var(--mat-sys-error) 10%, transparent)"
+      >
+        {{ serverError() }}
+      </p>
+    }
+
+    <button type="submit" matButton="filled" class="mt-1 h-12 w-full" [disabled]="submitting()">
+      @if (submitting()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Create account
+      }
+    </button>
+  </form>
+
+  <p class="mt-8 text-sm text-on-surface-variant">
+    Already have an account?
+    <a routerLink="/login" class="font-medium text-primary hover:underline">Sign in</a>
+  </p>
+</app-auth-layout>

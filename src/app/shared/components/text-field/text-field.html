@@ -1,0 +1,8 @@
+<mat-form-field class="w-full">
+  <mat-label>{{ label() }}</mat-label>
+  <input [type]="type()" [autocomplete]="autocomplete()" [formField]="field()" matInput />
+</mat-form-field>
+
+@if (state().touched() && state().invalid()) {
+  <p class="mt-1.5 text-xs text-error">{{ state().errors()[0]?.message }}</p>
+}

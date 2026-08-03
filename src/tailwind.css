@@ -8,4 +8,17 @@
      `static` keeps them emitted even before any component references them. */
   --color-income: #10b981;
   --color-expense: #f87171;
+
+  /* Bridges Angular Material's theme tokens into Tailwind utilities, so
+     `text-error` or `bg-surface` stay in sync with the Material theme and
+     follow light/dark automatically. */
+  --color-error: var(--mat-sys-error);
+  --color-surface: var(--mat-sys-surface);
+  --color-surface-container: var(--mat-sys-surface-container);
+  --color-surface-container-low: var(--mat-sys-surface-container-low);
+  --color-on-surface: var(--mat-sys-on-surface);
+  --color-on-surface-variant: var(--mat-sys-on-surface-variant);
+  --color-outline-variant: var(--mat-sys-outline-variant);
+  --color-primary: var(--mat-sys-primary);
+  --color-on-primary: var(--mat-sys-on-primary);
 }

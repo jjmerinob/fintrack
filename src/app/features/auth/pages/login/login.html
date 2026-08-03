@@ -1,1 +1,34 @@
-<p>login works!</p>
+<app-auth-layout heading="Welcome back" subheading="Sign in to continue to your account">
+  <form (submit)="onSubmit($event)" novalidate class="flex flex-col gap-5">
+    <app-text-field [field]="loginForm.email" label="Email" type="email" autocomplete="email" />
+
+    <app-password-field
+      [field]="loginForm.password"
+      label="Password"
+      autocomplete="current-password"
+    />
+
+    @if (serverError()) {
+      <p
+        role="alert"
+        class="rounded-lg px-3 py-2 text-sm text-error"
+        style="background-color: color-mix(in srgb, var(--mat-sys-error) 10%, transparent)"
+      >
+        {{ serverError() }}
+      </p>
+    }
+
+    <button type="submit" matButton="filled" class="mt-1 h-12 w-full" [disabled]="submitting()">
+      @if (submitting()) {
+        <mat-spinner diameter="20" />
+      } @else {
+        Sign in
+      }
+    </button>
+  </form>
+
+  <p class="mt-8 text-sm text-on-surface-variant">
+    Don't have an account?
+    <a routerLink="/signup" class="font-medium text-primary hover:underline">Create one</a>
+  </p>
+</app-auth-layout>
