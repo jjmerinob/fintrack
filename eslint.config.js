@@ -33,6 +33,11 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
+      // Unused callback params (route, state, next...) and empty stub bodies are
+      // expected on framework hooks (guards, interceptors, ErrorHandler) before
+      // their implementation lands.
+      '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+      '@typescript-eslint/no-empty-function': ['error', { allow: ['methods', 'arrowFunctions'] }],
     },
   },
   // Architectural boundaries between core, shared and features (src/app/*.ts files
