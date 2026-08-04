@@ -1,1 +1,10 @@
-<p>empty-state works!</p>
+<div class="flex flex-col items-center gap-3 py-16 text-center">
+  <mat-icon class="!h-10 !w-10 text-on-surface-variant" style="font-size: 2.5rem">{{
+    icon()
+  }}</mat-icon>
+  <p class="font-medium">{{ title() }}</p>
+  @if (message()) {
+    <p class="max-w-sm text-sm text-on-surface-variant">{{ message() }}</p>
+  }
+  <ng-content />
+</div>

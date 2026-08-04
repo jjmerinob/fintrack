@@ -9,6 +9,12 @@ describe('ThemeService', () => {
     vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: false } as MediaQueryList);
   });
 
+  afterEach(() => {
+    // An un-restored spy on a global like `window.matchMedia` would leak into
+    // every other spec file that runs after this one in the same process.
+    vi.restoreAllMocks();
+  });
+
   it('should default to light when there is no stored preference and the OS prefers light', () => {
     const service = TestBed.inject(ThemeService);
 

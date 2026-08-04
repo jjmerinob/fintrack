@@ -1,7 +1,9 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSidenav } from '@angular/material/sidenav';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
 
 import { AuthService } from '../../auth/auth.service';
 import { ThemeService } from '../../theme/theme.service';
@@ -24,6 +26,14 @@ describe('Shell', () => {
         { provide: AuthService, useValue: { logout: vi.fn() } },
         { provide: ThemeService, useValue: { isDark: () => false, toggle: vi.fn() } },
         { provide: UserService, useValue: { displayName: () => 'Ada Lovelace' } },
+        // Mocked instead of relying on the real (root-scoped, shared across every
+        // test file) BreakpointObserver singleton: other spec files that render
+        // Material overlays can leave its cached MediaQueryList state affecting
+        // unrelated tests, which made this suite order-dependent.
+        {
+          provide: BreakpointObserver,
+          useValue: { observe: () => of({ matches: false, breakpoints: {} }) },
+        },
       ],
     }).compileComponents();
 
@@ -40,8 +50,6 @@ describe('Shell', () => {
   });
 
   it('should keep the sidenav closed by default on a narrow (mobile) viewport', () => {
-    // jsdom's `matchMedia` polyfill never matches, so the desktop query is
-    // always false here, and the sidenav starts as a closed overlay.
     expect(sidenav().mode).toBe('over');
     expect(sidenav().opened).toBe(false);
   });

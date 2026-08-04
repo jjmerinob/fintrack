@@ -1,1 +1,191 @@
-<p>list works!</p>
+<div class="flex flex-col gap-6">
+  <header class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold tracking-tight">Transactions</h1>
+    <button type="button" matButton="filled" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Add transaction
+    </button>
+  </header>
+
+  <div class="flex flex-wrap items-center gap-4">
+    <div
+      role="radiogroup"
+      aria-label="Filter by type"
+      class="inline-flex gap-1 rounded-full bg-surface-container-low p-1"
+    >
+      @for (option of typeFilterOptions; track option.value) {
+        <button
+          type="button"
+          role="radio"
+          [attr.aria-checked]="transactionsService.typeFilter() === option.value"
+          (click)="onTypeFilterChange(option.value)"
+          class="rounded-full px-4 py-1.5 text-sm font-medium transition-colors"
+          [class.bg-primary]="transactionsService.typeFilter() === option.value"
+          [class.text-on-primary]="transactionsService.typeFilter() === option.value"
+          [class.text-on-surface-variant]="transactionsService.typeFilter() !== option.value"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    <mat-form-field subscriptSizing="dynamic" class="w-full max-w-xs">
+      <mat-icon matIconPrefix>search</mat-icon>
+      <mat-label>Search description</mat-label>
+      <input
+        matInput
+        #searchInput
+        [value]="transactionsService.search()"
+        (input)="onSearchInput(searchInput.value)"
+      />
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic" class="w-44">
+      <mat-label>Category</mat-label>
+      <mat-select
+        [value]="transactionsService.categoryFilter()"
+        (selectionChange)="onCategoryFilterChange($event.value)"
+      >
+        <mat-option value="all">All categories</mat-option>
+        @for (category of categoryOptions(); track category.id) {
+          <mat-option [value]="category.id">{{ category.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field subscriptSizing="dynamic" class="w-64">
+      <mat-label>Date range</mat-label>
+      <mat-date-range-input [rangePicker]="rangePicker">
+        <input
+          matStartDate
+          placeholder="Start date"
+          [value]="dateFromValue()"
+          (dateChange)="onStartDateChange($event.value)"
+        />
+        <input
+          matEndDate
+          placeholder="End date"
+          [value]="dateToValue()"
+          (dateChange)="onEndDateChange($event.value)"
+        />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="rangePicker" />
+      <mat-date-range-picker #rangePicker />
+    </mat-form-field>
+  </div>
+
+  <div class="overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-low">
+    @if (transactionsService.isLoading()) {
+      <div class="flex justify-center py-16">
+        <mat-spinner diameter="32" />
+      </div>
+    } @else if (transactionsService.transactions().length === 0) {
+      <app-empty-state
+        icon="receipt_long"
+        title="No transactions found"
+        message="Try a different filter, or add your first transaction."
+      >
+        <button type="button" matButton (click)="openCreateDialog()">Add transaction</button>
+      </app-empty-state>
+    } @else {
+      <table mat-table [dataSource]="transactionsService.transactions()" class="w-full">
+        <ng-container matColumnDef="date">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!text-xs !font-semibold uppercase tracking-wide !text-on-surface-variant"
+          >
+            Date
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row.transaction_date | date: 'mediumDate' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!text-xs !font-semibold uppercase tracking-wide !text-on-surface-variant"
+          >
+            Category
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <span class="inline-flex items-center gap-2">
+              <span
+                class="size-2 rounded-full"
+                [class.bg-income]="row.type === 'income'"
+                [class.bg-expense]="row.type === 'expense'"
+                aria-hidden="true"
+              ></span>
+              {{ categoriesService.byId(row.category_id)?.name ?? '—' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!text-xs !font-semibold uppercase tracking-wide !text-on-surface-variant"
+          >
+            Description
+          </th>
+          <td mat-cell *matCellDef="let row" class="text-on-surface-variant">
+            {{ row.description || '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="!text-right !text-xs !font-semibold uppercase tracking-wide !text-on-surface-variant"
+          >
+            Amount
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let row"
+            class="!text-right font-semibold tabular-nums"
+            [class.text-income]="row.type === 'income'"
+            [class.text-expense]="row.type === 'expense'"
+          >
+            {{ row.type === 'income' ? '+' : '−' }}{{ row.amount | currency: 'EUR' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row" class="!text-right">
+            <button
+              type="button"
+              matIconButton
+              (click)="openEditDialog(row)"
+              aria-label="Edit transaction"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              type="button"
+              matIconButton
+              (click)="confirmDelete(row)"
+              aria-label="Delete transaction"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="transactionsService.totalCount()"
+        [pageIndex]="transactionsService.pageIndex()"
+        [pageSize]="transactionsService.pageSize()"
+        [pageSizeOptions]="[10, 25, 50]"
+        (page)="onPage($event)"
+      />
+    }
+  </div>
+</div>

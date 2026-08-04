@@ -45,6 +45,14 @@ html.dark {
   --color-expense: #f87171;
 }
 
+// Applied via provideDialogDefaults() (shared/material/dialog.defaults.ts). The
+// backdrop element is appended outside any component's view, so it can only
+// be targeted with a global, unencapsulated style like this one.
+.app-dialog-backdrop {
+  background-color: rgb(0 0 0 / 60%);
+  backdrop-filter: blur(4px);
+}
+
 body {
   // Set a default background, font and text colors for the application using
   // Angular Material's system-level CSS variables. Learn more about these

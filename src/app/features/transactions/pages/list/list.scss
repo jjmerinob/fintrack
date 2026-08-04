@@ -1,0 +1,17 @@
+:host {
+  // Aligns Material's table tokens with our theme instead of its M3 defaults,
+  // so the table reads as part of the card instead of a mismatched white box
+  // with its own unrelated divider color.
+  --mat-table-background-color: transparent;
+  --mat-table-row-item-outline-color: var(--mat-sys-outline-variant);
+  --mat-table-header-container-height: 48px;
+  --mat-table-row-item-container-height: 56px;
+}
+
+tr[mat-header-row] {
+  background-color: var(--mat-sys-surface-container);
+}
+
+tr[mat-row]:hover {
+  background-color: var(--mat-sys-surface-container);
+}
