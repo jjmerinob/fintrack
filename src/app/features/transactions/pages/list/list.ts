@@ -120,7 +120,7 @@ export class List {
   protected openCreateDialog(): void {
     this.dialog.open<TransactionDialog, TransactionDialogData, boolean>(TransactionDialog, {
       ...DIALOG_STYLE,
-      width: '480px',
+      width: '560px',
       data: {},
     });
   }
@@ -128,7 +128,7 @@ export class List {
   protected openEditDialog(transaction: Transaction): void {
     this.dialog.open<TransactionDialog, TransactionDialogData, boolean>(TransactionDialog, {
       ...DIALOG_STYLE,
-      width: '480px',
+      width: '560px',
       data: { transaction },
     });
   }

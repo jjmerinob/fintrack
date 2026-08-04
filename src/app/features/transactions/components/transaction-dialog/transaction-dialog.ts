@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { form, FormField, min, required, submit } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -15,7 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 
-import { Transaction } from '../../../../core/models/transaction.model';
+import { Transaction, TransactionType } from '../../../../core/models/transaction.model';
 import { fromDateString, toDateString } from '../../../../shared/utils/date.util';
 import { CategoriesService } from '../../services/categories.service';
 import { TransactionsService } from '../../services/transactions.service';
@@ -51,6 +51,11 @@ export class TransactionDialog {
 
   protected readonly isEditing = !!this.data.transaction;
 
+  protected readonly typeOptions: { value: TransactionType; label: string }[] = [
+    { value: 'expense', label: 'Expense' },
+    { value: 'income', label: 'Income' },
+  ];
+
   protected readonly model = signal({
     type: this.data.transaction?.type ?? 'expense',
     categoryId: this.data.transaction?.category_id ?? '',
@@ -71,17 +76,25 @@ export class TransactionDialog {
   protected readonly submitting = signal(false);
   protected readonly serverError = signal<string | null>(null);
 
+  // Narrowed to just `type`, so the effect below only re-runs when the type
+  // itself changes rather than on every keystroke elsewhere in the form.
+  private readonly type = computed(() => this.model().type);
+
   constructor() {
     // The category list depends on the transaction type, so a category from
     // the previous type is no longer valid once the type changes.
-    let previousType = this.model().type;
+    let previousType = this.type();
     effect(() => {
-      const currentType = this.model().type;
+      const currentType = this.type();
       if (currentType !== previousType) {
         previousType = currentType;
         this.model.update((value) => ({ ...value, categoryId: '' }));
       }
     });
+  }
+
+  protected setType(type: TransactionType): void {
+    this.model.update((value) => ({ ...value, type }));
   }
 
   protected onSubmit(event: Event): void {

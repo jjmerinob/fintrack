@@ -51,6 +51,22 @@ describe('TransactionDialog', () => {
     await fixture.whenStable();
   }
 
+  function typeButton(label: 'Expense' | 'Income'): HTMLButtonElement {
+    const buttons: HTMLButtonElement[] = [
+      ...fixture.nativeElement.querySelectorAll('[role=radio]'),
+    ];
+    const button = buttons.find((b) => b.textContent?.trim() === label);
+    if (!button) {
+      throw new Error(`No type button found for "${label}"`);
+    }
+    return button;
+  }
+
+  async function selectType(label: 'Expense' | 'Income'): Promise<void> {
+    typeButton(label).click();
+    await fixture.whenStable();
+  }
+
   async function selectCategory(name: string): Promise<void> {
     fixture.nativeElement.querySelector('mat-select').click();
     await fixture.whenStable();
@@ -84,11 +100,9 @@ describe('TransactionDialog', () => {
 
     it('should default to expense with today filled in and no category chosen', () => {
       const amount: HTMLInputElement = fixture.nativeElement.querySelector('input[type=number]');
-      const expenseRadio: HTMLInputElement = fixture.nativeElement.querySelector(
-        'input[type=radio][value=expense]',
-      );
 
-      expect(expenseRadio.checked).toBe(true);
+      expect(typeButton('Expense').getAttribute('aria-checked')).toBe('true');
+      expect(typeButton('Income').getAttribute('aria-checked')).toBe('false');
       expect(amount.value).toBe('0');
     });
 
@@ -101,13 +115,7 @@ describe('TransactionDialog', () => {
 
     it('should reset the chosen category when the type is switched', async () => {
       await selectCategory('Groceries');
-
-      const incomeRadio: HTMLInputElement = fixture.nativeElement.querySelector(
-        'input[type=radio][value=income]',
-      );
-      incomeRadio.click();
-      incomeRadio.dispatchEvent(new Event('change'));
-      await fixture.whenStable();
+      await selectType('Income');
 
       // The previous (expense) category must not silently carry over: submitting
       // now should fail validation instead of saving a mismatched category.
@@ -172,12 +180,9 @@ describe('TransactionDialog', () => {
     it('should title itself "Edit transaction" and pre-fill the existing values', () => {
       const amount: HTMLInputElement = fixture.nativeElement.querySelector('input[type=number]');
       const description: HTMLTextAreaElement = fixture.nativeElement.querySelector('textarea');
-      const incomeRadio: HTMLInputElement = fixture.nativeElement.querySelector(
-        'input[type=radio][value=income]',
-      );
 
       expect(fixture.nativeElement.textContent).toContain('Edit transaction');
-      expect(incomeRadio.checked).toBe(true);
+      expect(typeButton('Income').getAttribute('aria-checked')).toBe('true');
       expect(amount.value).toBe('1500');
       expect(description.value).toBe('March pay');
     });

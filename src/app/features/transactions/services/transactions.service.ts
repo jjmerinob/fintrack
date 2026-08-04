@@ -34,17 +34,25 @@ export class TransactionsService {
   readonly pageIndex = this._pageIndex.asReadonly();
   readonly pageSize = this._pageSize.asReadonly();
 
+  // Returning `undefined` while signed out leaves the resource idle, so the
+  // list is fetched only once there is a user to fetch it for (mirrors
+  // CategoriesService/UserService).
   private readonly listResource = resource({
-    params: () => ({
-      userId: this.auth.user()?.id,
-      type: this._typeFilter(),
-      categoryId: this._categoryFilter(),
-      search: this._search(),
-      dateFrom: this._dateFrom(),
-      dateTo: this._dateTo(),
-      pageIndex: this._pageIndex(),
-      pageSize: this._pageSize(),
-    }),
+    params: () => {
+      const userId = this.auth.user()?.id;
+      if (!userId) {
+        return undefined;
+      }
+      return {
+        type: this._typeFilter(),
+        categoryId: this._categoryFilter(),
+        search: this._search(),
+        dateFrom: this._dateFrom(),
+        dateTo: this._dateTo(),
+        pageIndex: this._pageIndex(),
+        pageSize: this._pageSize(),
+      };
+    },
     loader: async ({ params }) => {
       const from = params.pageIndex * params.pageSize;
       const to = from + params.pageSize - 1;

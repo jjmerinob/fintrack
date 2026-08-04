@@ -209,6 +209,14 @@ describe('TransactionsService', () => {
     expect(deleteQuery.eq).toHaveBeenCalledWith('id', 'txn-1');
   });
 
+  it('should not query while signed out', async () => {
+    const from = vi.fn();
+    createService(from, null);
+    await settle();
+
+    expect(from).not.toHaveBeenCalled();
+  });
+
   it('should surface errors from a failed mutation', async () => {
     const listQuery = createQueryBuilder([], { count: 0 });
     const failingQuery = createQueryBuilder(null, { error: new Error('RLS violation') });
