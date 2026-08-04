@@ -1,17 +1,38 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { CanActivateFn } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  provideRouter,
+  Router,
+  RouterStateSnapshot,
+  UrlTree,
+} from '@angular/router';
 
 import { authGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 describe('authGuard', () => {
-  const executeGuard: CanActivateFn = (...guardParameters) =>
-    TestBed.runInInjectionContext(() => authGuard(...guardParameters));
+  function runGuard(isAuthenticated: boolean) {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: { isAuthenticated: signal(isAuthenticated) } },
+      ],
+    });
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
+    return TestBed.runInInjectionContext(() =>
+      authGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
+    );
+  }
+
+  it('should let an authenticated user through', () => {
+    expect(runGuard(true)).toBe(true);
   });
 
-  it('should be created', () => {
-    expect(executeGuard).toBeTruthy();
+  it('should send an anonymous user to the login page', () => {
+    const result = runGuard(false);
+
+    expect(result).toBeInstanceOf(UrlTree);
+    expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe('/login');
   });
 });
