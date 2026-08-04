@@ -1,1 +1,37 @@
-<p>shell works!</p>
+<mat-sidenav-container class="h-screen">
+  <mat-sidenav
+    [mode]="sidenavMode()"
+    [opened]="sidenavOpened()"
+    (openedChange)="sidenavOpened.set($event)"
+    class="w-64 !bg-surface-container-low"
+  >
+    <div class="flex h-16 items-center gap-2 px-5">
+      <span class="grid size-8 place-items-center rounded-lg bg-primary text-on-primary">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4"
+          aria-hidden="true"
+        >
+          <path d="M3 17l6-6 4 4 7-7" />
+          <path d="M14 7h6v6" />
+        </svg>
+      </span>
+      <span class="font-semibold tracking-tight">Fintrack</span>
+    </div>
+
+    <app-sidenav (linkClicked)="closeOnMobileNavigation()" />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="!flex h-screen flex-col">
+    <app-header (menuButtonClicked)="sidenavOpened.set(true)" />
+
+    <main class="flex-1 overflow-y-auto bg-surface p-4 sm:p-6 lg:p-8">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

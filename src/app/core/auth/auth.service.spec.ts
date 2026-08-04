@@ -26,7 +26,7 @@ describe('AuthService', () => {
     vi.resetAllMocks();
     auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
     auth.signInWithPassword.mockResolvedValue({ error: null });
-    auth.signUp.mockResolvedValue({ error: null });
+    auth.signUp.mockResolvedValue({ data: { session }, error: null });
     auth.signOut.mockResolvedValue({ error: null });
   });
 
@@ -79,6 +79,23 @@ describe('AuthService', () => {
       password: 'hunter2',
       options: { data: { full_name: 'Ada Lovelace' } },
     });
+  });
+
+  it('should report no confirmation needed when Supabase returns a live session', async () => {
+    const service = createService();
+
+    const result = await service.register('ada@example.com', 'hunter2', 'Ada Lovelace');
+
+    expect(result).toEqual({ requiresEmailConfirmation: false });
+  });
+
+  it('should report confirmation needed when "Confirm email" is on and no session comes back', async () => {
+    auth.signUp.mockResolvedValue({ data: { session: null }, error: null });
+    const service = createService();
+
+    const result = await service.register('ada@example.com', 'hunter2', 'Ada Lovelace');
+
+    expect(result).toEqual({ requiresEmailConfirmation: true });
   });
 
   it('should surface logout failures to the caller', async () => {

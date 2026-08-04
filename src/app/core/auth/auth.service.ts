@@ -38,8 +38,19 @@ export class AuthService {
     }
   }
 
-  async register(email: string, password: string, fullName: string): Promise<void> {
-    const { error } = await this.supabase.auth.signUp({
+  /**
+   * Registers a new account.
+   *
+   * @returns `requiresEmailConfirmation: true` when the project has "Confirm
+   * email" enabled — Supabase then returns a user but no session, so the
+   * caller must send them to sign in instead of treating them as logged in.
+   */
+  async register(
+    email: string,
+    password: string,
+    fullName: string,
+  ): Promise<{ requiresEmailConfirmation: boolean }> {
+    const { data, error } = await this.supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: fullName } },
@@ -47,6 +58,7 @@ export class AuthService {
     if (error) {
       throw error;
     }
+    return { requiresEmailConfirmation: data.session === null };
   }
 
   async logout(): Promise<void> {

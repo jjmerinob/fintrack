@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { email, form, minLength, required, submit, validate } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -25,6 +26,7 @@ import { AuthLayout } from '../../components/auth-layout/auth-layout';
 export class Signup {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly account = signal({
     fullName: '',
@@ -62,8 +64,18 @@ export class Signup {
 
       try {
         const { fullName, email: address, password } = this.account();
-        await this.auth.register(address, password, fullName);
-        await this.router.navigate(['/dashboard']);
+        const { requiresEmailConfirmation } = await this.auth.register(address, password, fullName);
+
+        if (requiresEmailConfirmation) {
+          // No session yet: the project requires confirming the email address
+          // before the first sign-in, so there is nothing to land the user on.
+          await this.router.navigate(['/login']);
+          this.snackBar.open('Check your inbox to confirm your account before signing in.', 'OK', {
+            duration: 8000,
+          });
+        } else {
+          await this.router.navigate(['/dashboard']);
+        }
       } catch (error) {
         this.serverError.set(
           error instanceof Error ? error.message : 'Something went wrong. Please try again.',

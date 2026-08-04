@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { provideRouter, Router } from '@angular/router';
 
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -7,6 +8,7 @@ import { Signup } from './signup';
 describe('Signup', () => {
   let fixture: ComponentFixture<Signup>;
   const authService = { register: vi.fn() };
+  const snackBar = { open: vi.fn() };
 
   /** Password inputs share a selector, so they are addressed by position. */
   async function fillIn(selector: string, value: string, index = 0): Promise<void> {
@@ -30,11 +32,15 @@ describe('Signup', () => {
 
   beforeEach(async () => {
     vi.resetAllMocks();
-    authService.register.mockResolvedValue(undefined);
+    authService.register.mockResolvedValue({ requiresEmailConfirmation: false });
 
     await TestBed.configureTestingModule({
       imports: [Signup],
-      providers: [provideRouter([]), { provide: AuthService, useValue: authService }],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: authService },
+        { provide: MatSnackBar, useValue: snackBar },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Signup);
@@ -67,7 +73,7 @@ describe('Signup', () => {
     expect(fixture.nativeElement.textContent).toContain('Passwords do not match');
   });
 
-  it('should register the account with the name, email and password', async () => {
+  it('should register the account and land on the dashboard when the session is live', async () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
     await fillValidForm();
@@ -79,6 +85,20 @@ describe('Signup', () => {
       'Ada Lovelace',
     );
     expect(navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(snackBar.open).not.toHaveBeenCalled();
+  });
+
+  it('should send the user to sign in with a message when email confirmation is required', async () => {
+    authService.register.mockResolvedValue({ requiresEmailConfirmation: true });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+    await fillValidForm();
+    await submitForm();
+
+    expect(navigate).toHaveBeenCalledWith(['/login']);
+    expect(snackBar.open).toHaveBeenCalledWith(expect.stringContaining('confirm'), 'OK', {
+      duration: 8000,
+    });
   });
 
   it('should show the reason when the account cannot be created', async () => {
