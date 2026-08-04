@@ -1,1 +1,76 @@
-<p>settings works!</p>
+<div class="flex flex-col gap-6">
+  <header>
+    <h1 class="text-2xl font-semibold tracking-tight">Profile</h1>
+    <p class="text-sm text-on-surface-variant">Your account details and preferences.</p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-24">
+      <mat-spinner diameter="32" />
+    </div>
+  } @else {
+    <div class="grid max-w-3xl gap-4">
+      <app-card title="Your details">
+        <form (submit)="onSubmit($event)" novalidate class="flex flex-col gap-5">
+          <app-text-field [field]="profileForm.fullName" label="Full name" autocomplete="name" />
+
+          <div class="flex flex-col gap-1">
+            <label for="email" class="text-xs font-medium text-on-surface-variant">Email</label>
+            <input
+              id="email"
+              type="email"
+              [value]="email()"
+              readonly
+              aria-describedby="email-hint"
+              class="rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-sm text-on-surface-variant"
+            />
+            <p id="email-hint" class="text-xs text-on-surface-variant">
+              Changing your email requires confirming the new address, so it is managed from the
+              sign-in flow.
+            </p>
+          </div>
+
+          @if (serverError()) {
+            <p
+              role="alert"
+              class="rounded-lg px-3 py-2 text-sm text-error"
+              style="background-color: color-mix(in srgb, var(--mat-sys-error) 10%, transparent)"
+            >
+              {{ serverError() }}
+            </p>
+          }
+
+          <div class="flex items-center gap-3">
+            <button type="submit" matButton="filled" [disabled]="saving()">
+              @if (saving()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                Save changes
+              }
+            </button>
+
+            @if (saved()) {
+              <p role="status" class="text-sm text-income-strong">Saved</p>
+            }
+          </div>
+        </form>
+      </app-card>
+
+      <app-card title="Preferences">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex flex-col gap-1">
+            <p class="text-sm text-on-surface">Currency</p>
+            <p class="text-xs text-on-surface-variant">
+              Every amount in Fintrack is shown in euros. Multiple currencies are not supported yet.
+            </p>
+          </div>
+          <p class="shrink-0 text-sm font-medium text-on-surface">Euro (€)</p>
+        </div>
+      </app-card>
+
+      @if (memberSince()) {
+        <p class="text-xs text-on-surface-variant">Member since {{ memberSince() }}</p>
+      }
+    </div>
+  }
+</div>

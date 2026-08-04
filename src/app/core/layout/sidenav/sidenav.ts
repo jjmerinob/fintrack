@@ -13,7 +13,6 @@ const NAV_LINKS: readonly NavLink[] = [
   { label: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
   { label: 'Transactions', path: '/transactions', icon: 'receipt_long' },
   { label: 'AI Insights', path: '/ai-insights', icon: 'auto_awesome' },
-  { label: 'Profile', path: '/profile', icon: 'person' },
 ];
 
 @Component({
