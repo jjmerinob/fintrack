@@ -1,1 +1,38 @@
-<p>stat-card works!</p>
+<!-- `h-full` so cards in the same grid row match height even when one has no
+     delta row or a larger value; `mt-auto` then pins the delta to the bottom. -->
+<article
+  class="flex h-full flex-col gap-2 rounded-2xl border border-outline-variant bg-surface-container-low p-5"
+>
+  <p class="text-xs font-medium uppercase tracking-wide text-on-surface-variant">{{ label() }}</p>
+
+  <p
+    class="font-semibold text-on-surface"
+    [class.text-4xl]="emphasis()"
+    [class.text-2xl]="!emphasis()"
+  >
+    {{ value() }}
+  </p>
+
+  @if (hasDelta()) {
+    <p class="mt-auto flex items-center gap-1.5 text-xs">
+      <span
+        class="font-semibold"
+        [class.text-income-strong]="isFavorable()"
+        [class.text-expense-strong]="!isFavorable() && !isFlat()"
+        [class.text-on-surface-variant]="isFlat()"
+      >
+        <!-- The arrow states the direction, so the number itself stays unsigned
+             and the meaning survives without color. -->
+        @if (isFlat()) {
+          →
+        } @else if (isRising()) {
+          ↑
+        } @else {
+          ↓
+        }
+        {{ formattedDelta() }}
+      </span>
+      <span class="text-on-surface-variant">{{ comparisonLabel() }}</span>
+    </p>
+  }
+</article>

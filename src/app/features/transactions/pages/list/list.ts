@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -17,6 +17,7 @@ import {
   ConfirmDialogData,
 } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
+import { AmountPipe } from '../../../../shared/pipes/amount.pipe';
 import { fromDateString, toDateString } from '../../../../shared/utils/date.util';
 import {
   TransactionDialog,
@@ -32,7 +33,7 @@ const DIALOG_STYLE = { backdropClass: 'app-dialog-backdrop', panelClass: 'app-di
 @Component({
   selector: 'app-list',
   imports: [
-    CurrencyPipe,
+    AmountPipe,
     DatePipe,
     EmptyState,
     MatButtonModule,

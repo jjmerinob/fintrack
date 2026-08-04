@@ -1,1 +1,16 @@
-<p>card works!</p>
+<!-- `h-full` keeps side-by-side cards the same height regardless of what each
+     one wraps (a tall chart next to a short one). -->
+<section
+  class="flex h-full flex-col gap-4 rounded-2xl border border-outline-variant bg-surface-container-low p-5"
+>
+  @if (title()) {
+    <header class="flex flex-col gap-0.5">
+      <h2 class="text-sm font-semibold tracking-wide text-on-surface">{{ title() }}</h2>
+      @if (subtitle()) {
+        <p class="text-xs text-on-surface-variant">{{ subtitle() }}</p>
+      }
+    </header>
+  }
+
+  <ng-content />
+</section>

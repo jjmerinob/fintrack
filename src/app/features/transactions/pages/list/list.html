@@ -149,7 +149,7 @@
             [class.text-income]="row.type === 'income'"
             [class.text-expense]="row.type === 'expense'"
           >
-            {{ row.type === 'income' ? '+' : '−' }}{{ row.amount | currency: 'EUR' }}
+            {{ row.type === 'income' ? '+' : '−' }}{{ row.amount | amount }}
           </td>
         </ng-container>
 

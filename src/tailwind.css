@@ -9,6 +9,11 @@
   --color-income: #10b981;
   --color-expense: #f87171;
 
+  /* Darker steps of the same two families, for small text where the pair above
+     is too light to clear the 4.5:1 text-contrast floor (deltas, captions). */
+  --color-income-strong: #006c49;
+  --color-expense-strong: #a83639;
+
   /* Bridges Angular Material's theme tokens into Tailwind utilities, so
      `text-error` or `bg-surface` stay in sync with the Material theme and
      follow light/dark automatically. */

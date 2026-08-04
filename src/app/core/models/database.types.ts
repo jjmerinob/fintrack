@@ -152,7 +152,22 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      dashboard_category_breakdown: {
+        Args: { period_end: string; period_start: string };
+        Returns: {
+          category_id: string;
+          category_name: string;
+          total: number;
+        }[];
+      };
+      dashboard_monthly_summary: {
+        Args: { months?: number };
+        Returns: {
+          month: string;
+          total_income: number;
+          total_expense: number;
+        }[];
+      };
     };
     Enums: {
       transaction_type: 'expense' | 'income';

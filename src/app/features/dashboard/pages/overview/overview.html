@@ -1,1 +1,69 @@
-<p>overview works!</p>
+<div class="flex flex-col gap-6">
+  <header>
+    <h1 class="text-2xl font-semibold tracking-tight">Dashboard</h1>
+    <p class="text-sm text-on-surface-variant">Your money this month, at a glance.</p>
+  </header>
+
+  @if (dashboard.isLoading()) {
+    <div class="flex justify-center py-24">
+      <mat-spinner diameter="32" />
+    </div>
+  } @else if (dashboard.error()) {
+    <app-empty-state
+      icon="error_outline"
+      title="Couldn’t load your dashboard"
+      message="Something went wrong while fetching your figures. Please try again."
+    />
+  } @else if (isEmpty()) {
+    <app-empty-state
+      icon="insights"
+      title="Nothing to chart yet"
+      message="Once you record a few transactions, your trends will show up here."
+    />
+  } @else {
+    <!-- Headline figures. Balance is the one hero number on this view. -->
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <app-stat-card label="Balance this month" [value]="balance()" [emphasis]="true" />
+      <app-stat-card label="Income" [value]="income()" [delta]="incomeDelta()" />
+      <app-stat-card
+        label="Expenses"
+        [value]="expenses()"
+        [delta]="expensesDelta()"
+        [positiveIsGood]="false"
+      />
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      <app-card class="lg:col-span-2" title="Income vs expenses" subtitle="Last 6 months">
+        <div echarts [options]="trendOptions()" class="h-72 w-full"></div>
+      </app-card>
+
+      <app-card title="Spending rate" subtitle="This month">
+        <!-- `flex-1` lets the ring take the height the taller card next to it
+             sets, so it sits centered instead of leaving a gap underneath. -->
+        <div class="relative flex flex-1 items-center justify-center">
+          <div echarts [options]="ringOptions()" class="h-56 w-full"></div>
+
+          <!-- Over the canvas rather than inside it, so the figure wears normal
+               text tokens instead of the chart's fill color. -->
+          <div
+            class="pointer-events-none absolute flex flex-col items-center gap-1 px-6 text-center"
+          >
+            <span class="text-3xl font-semibold text-on-surface">{{ spentPercent() }}</span>
+            <span class="text-xs text-on-surface-variant">{{ spentCaption() }}</span>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <app-card title="Where your money went" subtitle="Expenses by category, this month">
+      @if (dashboard.categoryBreakdown().length === 0) {
+        <p class="py-8 text-center text-sm text-on-surface-variant">
+          No expenses recorded this month.
+        </p>
+      } @else {
+        <div echarts [options]="breakdownOptions()" class="h-72 w-full"></div>
+      }
+    </app-card>
+  }
+</div>

@@ -18,6 +18,27 @@ describe('Shell', () => {
     return fixture.debugElement.query(By.directive(MatSidenav)).componentInstance;
   }
 
+  /**
+   * MatSidenavContainer enables its CSS transitions from a `setTimeout(…, 200)`
+   * fired on init. Until that lands, a toggle takes an immediate code path that
+   * emits `openedChange` from a timer — and since the template writes that back
+   * into `sidenavOpened`, an in-flight "opened" emit could land *after* a close
+   * and reopen the drawer. Whether that happened depended purely on how fast the
+   * test ran, which is what made this suite fail intermittently (~40% of runs,
+   * even in isolation).
+   *
+   * Waiting past the timer pins every test to the same regime the real app runs
+   * in: transitions on, where `opened` is set synchronously and `openedChange`
+   * waits for a `transitionend` that jsdom never fires.
+   */
+  const TRANSITIONS_ENABLED_DELAY = 250;
+
+  /** Lets the drawer settle before the next interaction, as a real user would. */
+  async function settle(): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve));
+    await fixture.whenStable();
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Shell],
@@ -39,6 +60,8 @@ describe('Shell', () => {
 
     fixture = TestBed.createComponent(Shell);
     await fixture.whenStable();
+    await new Promise((resolve) => setTimeout(resolve, TRANSITIONS_ENABLED_DELAY));
+    await fixture.whenStable();
   });
 
   it('should render the header, the navigation and a router outlet for the page content', () => {
@@ -56,21 +79,21 @@ describe('Shell', () => {
 
   it('should open the sidenav when the header requests it', async () => {
     fixture.nativeElement.querySelector('button[aria-label="Open navigation menu"]').click();
-    await fixture.whenStable();
+    await settle();
 
     expect(sidenav().opened).toBe(true);
   });
 
   it('should close the sidenav when Sidenav reports a navigation, on a narrow viewport', async () => {
     fixture.nativeElement.querySelector('button[aria-label="Open navigation menu"]').click();
-    await fixture.whenStable();
+    await settle();
     expect(sidenav().opened).toBe(true);
 
     // Emitting the output directly (rather than clicking a routerLink) keeps
     // this test independent of real navigation and of MatSidenav's CSS-driven
     // open/close animation, which jsdom cannot run.
     fixture.debugElement.query(By.directive(Sidenav)).componentInstance.linkClicked.emit();
-    await fixture.whenStable();
+    await settle();
 
     expect(sidenav().opened).toBe(false);
   });
