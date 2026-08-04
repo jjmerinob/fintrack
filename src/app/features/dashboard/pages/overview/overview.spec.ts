@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgxEchartsDirective } from 'ngx-echarts';
 
 import { CategoryBreakdown, MonthlySummary } from '../../../../core/models/dashboard.model';
-import { UserService } from '../../../../core/user/user.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { Overview } from './overview';
 
@@ -63,10 +62,7 @@ describe('Overview', () => {
 
     await TestBed.configureTestingModule({
       imports: [Overview],
-      providers: [
-        { provide: DashboardService, useValue: dashboard },
-        { provide: UserService, useValue: { currency: signal('EUR') } },
-      ],
+      providers: [{ provide: DashboardService, useValue: dashboard }],
     })
       .overrideComponent(Overview, {
         remove: { imports: [NgxEchartsDirective] },
@@ -105,12 +101,12 @@ describe('Overview', () => {
     expect(text()).toContain('Nothing to chart yet');
   });
 
-  it('should format the headline figures in the profile currency', async () => {
+  it('should format the headline figures with the euro symbol on the right', async () => {
     await setUp();
 
-    expect(text()).toContain('600.00 €');
-    expect(text()).toContain('2,400.00 €');
-    expect(text()).toContain('1,800.00 €');
+    expect(text()).toContain('600.00 €');
+    expect(text()).toContain('2,400.00 €');
+    expect(text()).toContain('1,800.00 €');
   });
 
   it('should compare each figure against the previous month', async () => {

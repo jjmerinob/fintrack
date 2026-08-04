@@ -6,7 +6,7 @@ const LOCALE = 'en-US';
 const SYMBOL = '€';
 
 /** Non-breaking, so an amount never wraps away from its symbol. */
-const NBSP = ' ';
+const NBSP = '\xa0';
 
 /** `1234.5` -> `'1,234.50 €'`. */
 export function formatAmount(value: number): string {

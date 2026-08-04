@@ -1,33 +1,36 @@
 import { formatAmount, percentChange } from './currency.util';
 
+/** The non-breaking space that joins an amount to its symbol. */
+const NBSP = '\xa0';
+
 describe('currency utils', () => {
   describe('formatAmount', () => {
     it('should put the euro symbol after the amount', () => {
       // Deliberately not `Intl`'s currency style, which would render `€1,234.50`.
-      expect(formatAmount(1234.5)).toBe('1,234.50 €');
+      expect(formatAmount(1234.5)).toBe(`1,234.50${NBSP}€`);
     });
 
-    it('should separate the amount from the symbol with a non-breaking space', () => {
-      // A normal space would let the symbol wrap onto its own line.
-      expect(formatAmount(10)).toContain(' ');
+    it('should join the amount and the symbol with a non-breaking space', () => {
+      // A plain space would let the symbol wrap onto a line of its own.
+      expect(formatAmount(10)).toContain(NBSP);
       expect(formatAmount(10)).not.toContain(' €');
     });
 
     it('should always show two decimals', () => {
-      expect(formatAmount(10)).toBe('10.00 €');
-      expect(formatAmount(0)).toBe('0.00 €');
+      expect(formatAmount(10)).toBe(`10.00${NBSP}€`);
+      expect(formatAmount(0)).toBe(`0.00${NBSP}€`);
     });
 
     it('should round to the nearest cent', () => {
-      expect(formatAmount(1.005)).toBe('1.01 €');
+      expect(formatAmount(1.005)).toBe(`1.01${NBSP}€`);
     });
 
     it('should group thousands', () => {
-      expect(formatAmount(1000000)).toBe('1,000,000.00 €');
+      expect(formatAmount(1000000)).toBe(`1,000,000.00${NBSP}€`);
     });
 
     it('should keep the sign of a negative balance in front', () => {
-      expect(formatAmount(-42)).toBe('-42.00 €');
+      expect(formatAmount(-42)).toBe(`-42.00${NBSP}€`);
     });
   });
 
