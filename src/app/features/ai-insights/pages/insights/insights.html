@@ -1,1 +1,105 @@
-<p>insights works!</p>
+<div class="flex flex-col gap-6">
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">AI Insights</h1>
+      <p class="text-sm text-on-surface-variant">
+        What your numbers say beyond the charts, for this month.
+      </p>
+    </div>
+
+    @if (insightsService.hasInsights()) {
+      <!-- One projectable node per branch: with both the icon and the label in
+           the `@else`, Material could not place the icon in its own slot. -->
+      <button type="button" matButton (click)="regenerate()" [disabled]="insightsService.loading()">
+        @if (insightsService.loading()) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <mat-icon>refresh</mat-icon>
+        }
+        Regenerate
+      </button>
+    }
+  </header>
+
+  @if (insightsService.loading() && !insightsService.hasInsights()) {
+    <div class="flex flex-col items-center gap-3 py-24">
+      <mat-spinner diameter="32" />
+      <p class="text-sm text-on-surface-variant">Reading your month…</p>
+    </div>
+  } @else if (showErrorState()) {
+    <app-empty-state icon="cloud_off" title="No analysis yet" [message]="insightsService.error()!">
+      <button type="button" matButton="filled" (click)="retry()">Try again</button>
+    </app-empty-state>
+  } @else if (insightsService.hasInsights()) {
+    @if (showErrorBanner()) {
+      <p
+        role="alert"
+        class="rounded-lg px-3 py-2 text-sm text-error"
+        style="background-color: color-mix(in srgb, var(--mat-sys-error) 10%, transparent)"
+      >
+        {{ insightsService.error() }}
+      </p>
+    }
+
+    <div class="flex flex-col gap-6" [class.refreshing]="insightsService.loading()">
+      <app-card title="This month">
+        <!-- Interpolation, never innerHTML: this text is written by a language
+             model and is treated as untrusted throughout. -->
+        <p class="text-lg leading-relaxed text-on-surface">
+          {{ insightsService.insights()!.summary }}
+        </p>
+      </app-card>
+
+      @if (insightsService.insights()!.observations.length) {
+        <section class="flex flex-col gap-3">
+          <h2 class="text-sm font-semibold tracking-wide text-on-surface">What stands out</h2>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            @for (
+              observation of insightsService.insights()!.observations;
+              track observation.title
+            ) {
+              <app-card>
+                <div class="flex items-start gap-3">
+                  <span
+                    class="tone-badge size-10 shrink-0 rounded-xl"
+                    [class]="toneClass(observation.tone)"
+                    aria-hidden="true"
+                  >
+                    <mat-icon>{{ iconFor(observation.tone) }}</mat-icon>
+                  </span>
+                  <div class="flex flex-col gap-1">
+                    <p class="text-sm font-semibold text-on-surface">{{ observation.title }}</p>
+                    <p class="text-sm leading-relaxed text-on-surface-variant">
+                      {{ observation.detail }}
+                    </p>
+                  </div>
+                </div>
+              </app-card>
+            }
+          </div>
+        </section>
+      }
+
+      @if (insightsService.insights()!.tips.length) {
+        <app-card title="What you could do">
+          <ul class="flex flex-col gap-3">
+            @for (tip of insightsService.insights()!.tips; track tip) {
+              <li class="flex items-start gap-3">
+                <mat-icon class="shrink-0 !text-primary" aria-hidden="true">check_circle</mat-icon>
+                <span class="text-sm leading-relaxed text-on-surface-variant">{{ tip }}</span>
+              </li>
+            }
+          </ul>
+        </app-card>
+      }
+
+      <p class="text-xs text-on-surface-variant">
+        @if (insightsService.generatedAt(); as generatedAt) {
+          Generated {{ generatedAt | date: 'medium' }}.
+        }
+        Written by a language model from figures calculated by Fintrack — not financial advice.
+      </p>
+    </div>
+  }
+</div>
