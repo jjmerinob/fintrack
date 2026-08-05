@@ -2,7 +2,7 @@
   <mat-sidenav
     [mode]="sidenavMode()"
     [opened]="sidenavOpened()"
-    (openedChange)="sidenavOpened.set($event)"
+    (openedChange)="onOpenedChange($event)"
     class="w-64 !bg-surface-container-low"
   >
     <div class="flex h-16 items-center gap-2 px-5">

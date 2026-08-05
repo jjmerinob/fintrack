@@ -19,21 +19,15 @@ describe('Shell', () => {
   }
 
   /**
-   * MatSidenavContainer enables its CSS transitions from a `setTimeout(…, 200)`
-   * fired on init. Until that lands, a toggle takes an immediate code path that
-   * emits `openedChange` from a timer — and since the template writes that back
-   * into `sidenavOpened`, an in-flight "opened" emit could land *after* a close
-   * and reopen the drawer. Whether that happened depended purely on how fast the
-   * test ran, which is what made this suite fail intermittently (~40% of runs,
-   * even in isolation).
+   * Lets the drawer's async `openedChange` emit land before moving on.
    *
-   * Waiting past the timer pins every test to the same regime the real app runs
-   * in: transitions on, where `opened` is set synchronously and `openedChange`
-   * waits for a `transitionend` that jsdom never fires.
+   * This suite used to need a 250ms wait here as well, to get past the
+   * `setTimeout(…, 200)` that MatSidenavContainer uses to enable its CSS
+   * transitions: before that landed, a stale "opened" emit could arrive after a
+   * close and reopen the drawer, so the result depended on how fast the test
+   * ran. `Shell.onOpenedChange` now ignores "opened" events outright, so both
+   * timing regimes behave the same and the wait is gone.
    */
-  const TRANSITIONS_ENABLED_DELAY = 250;
-
-  /** Lets the drawer settle before the next interaction, as a real user would. */
   async function settle(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve));
     await fixture.whenStable();
@@ -59,8 +53,6 @@ describe('Shell', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(Shell);
-    await fixture.whenStable();
-    await new Promise((resolve) => setTimeout(resolve, TRANSITIONS_ENABLED_DELAY));
     await fixture.whenStable();
   });
 
@@ -93,6 +85,35 @@ describe('Shell', () => {
     // this test independent of real navigation and of MatSidenav's CSS-driven
     // open/close animation, which jsdom cannot run.
     fixture.debugElement.query(By.directive(Sidenav)).componentInstance.linkClicked.emit();
+    await settle();
+
+    expect(sidenav().opened).toBe(false);
+  });
+
+  it('should follow the drawer when it closes itself, e.g. via the backdrop or Esc', async () => {
+    fixture.nativeElement.querySelector('button[aria-label="Open navigation menu"]').click();
+    await settle();
+
+    sidenav().close();
+    await settle();
+
+    // If the shell's own signal had not followed, the next change detection
+    // would push `[opened]="true"` back down and reopen the drawer.
+    expect(sidenav().opened).toBe(false);
+  });
+
+  it('should ignore a stale "opened" event that lands after the drawer was closed', async () => {
+    fixture.nativeElement.querySelector('button[aria-label="Open navigation menu"]').click();
+    await settle();
+
+    fixture.debugElement.query(By.directive(Sidenav)).componentInstance.linkClicked.emit();
+    await settle();
+    expect(sidenav().opened).toBe(false);
+
+    // `openedChange` is an async emitter fired at the end of an animation, so an
+    // event from the earlier open can still be in flight when the user closes
+    // the drawer. Writing it back would resurrect a panel already dismissed.
+    sidenav().openedChange.emit(true);
     await settle();
 
     expect(sidenav().opened).toBe(false);

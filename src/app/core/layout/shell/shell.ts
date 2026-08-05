@@ -42,4 +42,21 @@ export class Shell {
       this.sidenavOpened.set(false);
     }
   }
+
+  /**
+   * Accepts a close from the drawer, but never an open.
+   *
+   * The drawer dismisses itself on a backdrop click or Esc, and that has to be
+   * written back or our signal would drift out of sync. It never opens itself,
+   * though — every open comes from us. That asymmetry matters because
+   * `MatDrawer.openedChange` is an *async* EventEmitter fired from the end of an
+   * animation: an "opened" event from an earlier open can still be in flight
+   * when the user closes the drawer, land afterwards, and reopen a panel they
+   * just dismissed. Ignoring `true` makes that impossible.
+   */
+  protected onOpenedChange(opened: boolean): void {
+    if (!opened) {
+      this.sidenavOpened.set(false);
+    }
+  }
 }

@@ -43,4 +43,7 @@ export const routes: Routes = [
     path: '',
     loadChildren: () => import('./features/auth/auth.routes').then((m) => m.authRoutes),
   },
+  // Last, so it only catches URLs both branches above declined. Without it an
+  // unknown URL renders nothing at all — a blank page with no explanation.
+  { path: '**', redirectTo: 'dashboard' },
 ];
