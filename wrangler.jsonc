@@ -1,0 +1,19 @@
+{
+  // Cloudflare Workers deployment for the built Angular app.
+  //
+  // Unlike Cloudflare Pages, a Worker does not guess where the static files are:
+  // without this file it deploys an empty Worker and every URL answers 404.
+  "name": "fintrack",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    // Note the `browser` suffix: Angular's application builder writes there, not
+    // straight into `dist/fintrack`.
+    "directory": "./dist/fintrack/browser",
+
+    // Serve index.html for any path with no matching file, and let the Angular
+    // router take it from there. Without this, opening /transactions directly —
+    // a bookmark, a shared link, a refresh — returns 404, because routing only
+    // happens once index.html has loaded in the browser.
+    "not_found_handling": "single-page-application"
+  }
+}

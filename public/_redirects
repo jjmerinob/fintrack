@@ -1,0 +1,11 @@
+# Serve index.html for any path the host cannot find a file for, and let the
+# Angular router decide from there.
+#
+# Without this, a visitor who opens /transactions directly — a bookmark, a
+# shared link, or just pressing F5 — gets a 404: the host looks for a file at
+# that path and there is none. Routing happens in the browser, after index.html
+# has loaded.
+#
+# The 200 matters: it rewrites without redirecting, so the URL the user sees
+# stays intact. Understood by Cloudflare Pages and Netlify alike.
+/*    /index.html   200

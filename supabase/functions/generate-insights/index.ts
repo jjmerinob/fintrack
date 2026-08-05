@@ -21,11 +21,37 @@ const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MO
 /** How long before a user may force a fresh generation again. */
 const REFRESH_COOLDOWN_MINUTES = 10;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+/**
+ * Origins allowed to call this function, comma separated:
+ *   supabase secrets set ALLOWED_ORIGINS=https://fintrack.pages.dev,http://localhost:4300
+ *
+ * Defaults to `*` so a fresh checkout works before anything is deployed. Once
+ * there is a real domain, set it: without this, any site on the internet can
+ * make a visitor's browser call this endpoint with their session.
+ */
+const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '*')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+/**
+ * Echoes back the caller's origin when it is on the list, rather than returning
+ * the list itself — browsers only accept a single value here.
+ *
+ * `Vary: Origin` stops a CDN from serving one origin's cached response, and its
+ * CORS header, to another.
+ */
+function corsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('Origin') ?? '';
+  const allowAll = ALLOWED_ORIGINS.includes('*');
+
+  return {
+    'Access-Control-Allow-Origin': allowAll ? '*' : ALLOWED_ORIGINS.includes(origin) ? origin : '',
+    'Access-Control-Allow-Headers': 'authorization, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    Vary: 'Origin',
+  };
+}
 
 /**
  * The shape the page renders, stated in the prompt rather than through Gemini's
@@ -46,11 +72,15 @@ const SHAPE = `{
   "tips": ["short actionable sentence"]
 }`;
 
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-  });
+/** Binds the JSON responder to one request, so every reply carries that
+ *  caller's CORS headers. */
+function responder(req: Request) {
+  const cors = corsHeaders(req);
+  return (body: unknown, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
 }
 
 /**
@@ -113,8 +143,10 @@ function isValidInsights(value: any): boolean {
 }
 
 Deno.serve(async (req) => {
+  const json = responder(req);
+
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: CORS_HEADERS });
+    return new Response('ok', { headers: corsHeaders(req) });
   }
   if (req.method !== 'POST') {
     return json({ error: 'Method not allowed' }, 405);
