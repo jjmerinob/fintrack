@@ -6,6 +6,7 @@ import { echarts } from './charts/echarts-core';
 export const dashboardRoutes: Routes = [
   {
     path: '',
+    title: 'Dashboard',
     // Provided at the route rather than the root config so ECharts stays inside
     // the lazy dashboard chunk.
     providers: [provideEchartsCore({ echarts })],

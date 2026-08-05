@@ -6,6 +6,7 @@ import { provideFormFieldDefaults } from '../../shared/material/form-field.defau
 export const transactionsRoutes: Routes = [
   {
     path: '',
+    title: 'Transactions',
     providers: [provideFormFieldDefaults(), provideNativeDateAdapter()],
     loadComponent: () => import('./pages/list/list').then((m) => m.List),
   },

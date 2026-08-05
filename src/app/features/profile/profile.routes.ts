@@ -5,6 +5,7 @@ import { provideFormFieldDefaults } from '../../shared/material/form-field.defau
 export const profileRoutes: Routes = [
   {
     path: '',
+    title: 'Profile',
     providers: [provideFormFieldDefaults()],
     loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
   },

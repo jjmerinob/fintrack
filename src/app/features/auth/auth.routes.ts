@@ -11,10 +11,12 @@ export const authRoutes: Routes = [
     children: [
       {
         path: 'login',
+        title: 'Sign in',
         loadComponent: () => import('./pages/login/login').then((m) => m.Login),
       },
       {
         path: 'signup',
+        title: 'Create account',
         loadComponent: () => import('./pages/signup/signup').then((m) => m.Signup),
       },
     ],
