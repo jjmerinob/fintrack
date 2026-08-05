@@ -1,8 +1,8 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 
-import { environment } from '../../../environments/environment';
-import { AuthService } from './auth.service';
+import { environment } from '../../../../environments/environment';
+import { AuthService } from '../auth.service';
 
 /**
  * Attaches the Supabase JWT to calls made through `HttpClient` (Edge Functions).

@@ -8,10 +8,10 @@ import {
   UrlTree,
 } from '@angular/router';
 
-import { AuthService } from './auth.service';
-import { guestGuard } from './guest.guard';
+import { authGuard } from './auth.guard';
+import { AuthService } from '../auth.service';
 
-describe('guestGuard', () => {
+describe('authGuard', () => {
   function runGuard(isAuthenticated: boolean) {
     TestBed.configureTestingModule({
       providers: [
@@ -21,18 +21,18 @@ describe('guestGuard', () => {
     });
 
     return TestBed.runInInjectionContext(() =>
-      guestGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
+      authGuard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot),
     );
   }
 
-  it('should let an anonymous visitor through to login/signup', () => {
-    expect(runGuard(false)).toBe(true);
+  it('should let an authenticated user through', () => {
+    expect(runGuard(true)).toBe(true);
   });
 
-  it('should send an already-authenticated user to the dashboard', () => {
-    const result = runGuard(true);
+  it('should send an anonymous user to the login page', () => {
+    const result = runGuard(false);
 
     expect(result).toBeInstanceOf(UrlTree);
-    expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe('/dashboard');
+    expect(TestBed.inject(Router).serializeUrl(result as UrlTree)).toBe('/login');
   });
 });

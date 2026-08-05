@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { guestGuard } from '../../core/auth/guest.guard';
+import { guestGuard } from '../../core/auth/guards/guest.guard';
 import { provideFormFieldDefaults } from '../../shared/material/form-field.defaults';
 
 export const authRoutes: Routes = [
