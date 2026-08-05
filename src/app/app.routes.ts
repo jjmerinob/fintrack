@@ -45,5 +45,10 @@ export const routes: Routes = [
   },
   // Last, so it only catches URLs both branches above declined. Without it an
   // unknown URL renders nothing at all — a blank page with no explanation.
-  { path: '**', redirectTo: 'dashboard' },
+  {
+    path: '**',
+    title: 'Page not found',
+    loadComponent: () =>
+      import('./features/not-found/pages/not-found/not-found').then((m) => m.NotFound),
+  },
 ];

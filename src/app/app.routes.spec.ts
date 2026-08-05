@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 
 import { AuthService } from './core/auth/auth.service';
 import { routes } from './app.routes';
@@ -10,13 +11,9 @@ import { routes } from './app.routes';
  * branches both on `path: ''` (the shell and the auth pages) followed by a `**`
  * catch-all. Get the order wrong and either `/` renders nothing — a bug this app
  * has already had once — or the catch-all swallows `/login`.
- *
- * Asserts on the resulting URL rather than on rendered output, using the router
- * without an outlet: matching, guards and redirects all run, but no component is
- * instantiated, so the test stays about routing.
  */
 describe('app routes', () => {
-  function navigateAs(isAuthenticated: boolean) {
+  function setUp(isAuthenticated: boolean) {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
@@ -30,52 +27,52 @@ describe('app routes', () => {
         },
       ],
     });
-
-    const router = TestBed.inject(Router);
-    return {
-      go: async (url: string) => {
-        await router.navigateByUrl(url);
-        return router.url;
-      },
-    };
   }
 
-  it('should send a signed-in user from an unknown URL to the dashboard', async () => {
-    const { go } = navigateAs(true);
+  it('should render the not-found page for an unknown URL', async () => {
+    setUp(true);
+    const harness = await RouterTestingHarness.create();
 
-    expect(await go('/no-such-page')).toBe('/dashboard');
+    await harness.navigateByUrl('/no-such-page');
+
+    expect(harness.routeNativeElement?.textContent).toContain('Page not found');
   });
 
-  it('should land a signed-in user on the dashboard at the root URL', async () => {
-    const { go } = navigateAs(true);
+  it('should keep an unknown URL as not-found even for a signed-in user', async () => {
+    setUp(true);
+    const harness = await RouterTestingHarness.create();
 
-    // Regression guard: the two sibling `path: ''` branches once resolved to a
-    // blank page here, because the auth branch matched the empty URL and
-    // rendered nothing.
-    expect(await go('/')).toBe('/dashboard');
+    await harness.navigateByUrl('/dashboardd');
+
+    expect(harness.routeNativeElement?.textContent).toContain('Page not found');
   });
 
   it('should still reach the login page, which the catch-all must not swallow', async () => {
-    const { go } = navigateAs(false);
+    setUp(false);
+    const harness = await RouterTestingHarness.create();
 
-    expect(await go('/login')).toBe('/login');
+    await harness.navigateByUrl('/login');
+
+    expect(harness.routeNativeElement?.textContent).not.toContain('Page not found');
+    expect(TestBed.inject(Router).url).toBe('/login');
   });
 
   it('should still reach the signup page', async () => {
-    const { go } = navigateAs(false);
+    setUp(false);
+    const harness = await RouterTestingHarness.create();
 
-    expect(await go('/signup')).toBe('/signup');
+    await harness.navigateByUrl('/signup');
+
+    expect(TestBed.inject(Router).url).toBe('/signup');
   });
 
   it('should send an anonymous visitor from a private URL to the login page', async () => {
-    const { go } = navigateAs(false);
+    setUp(false);
+    const harness = await RouterTestingHarness.create();
 
-    expect(await go('/transactions')).toBe('/login');
-  });
+    await harness.navigateByUrl('/transactions');
 
-  it('should keep a signed-in user away from the auth pages', async () => {
-    const { go } = navigateAs(true);
-
-    expect(await go('/login')).toBe('/dashboard');
+    // Not the not-found page: the URL is real, the visitor just is not allowed.
+    expect(TestBed.inject(Router).url).toBe('/login');
   });
 });
