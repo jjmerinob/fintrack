@@ -1,9 +1,9 @@
 import { computed, inject, resource, Service } from '@angular/core';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { CategoryBreakdown, MonthlySummary } from '../../../core/models/dashboard.model';
-import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
-import { toDateString } from '../../../shared/utils/date.util';
+import { AuthService } from '@core/auth/auth.service';
+import { CategoryBreakdown, MonthlySummary } from '@core/models/dashboard.model';
+import { SupabaseClientService } from '@core/supabase/supabase-client.service';
+import { toDateString } from '@shared/utils/date.util';
 
 /** How many months the trend chart covers, including the current one. */
 const TREND_MONTHS = 6;

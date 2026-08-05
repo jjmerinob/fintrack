@@ -2,8 +2,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { Category } from '../../../../core/models/category.model';
-import { Transaction } from '../../../../core/models/transaction.model';
+import { Category } from '@core/models/category.model';
+import { Transaction } from '@core/models/transaction.model';
 import { CategoriesService } from '../../services/categories.service';
 import { TransactionsService } from '../../services/transactions.service';
 import { TransactionDialog, TransactionDialogData } from './transaction-dialog';

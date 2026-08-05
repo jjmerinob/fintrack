@@ -2,10 +2,10 @@ import { Component, computed, inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgxEchartsDirective } from 'ngx-echarts';
 
-import { Card } from '../../../../shared/components/card/card';
-import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
-import { StatCard } from '../../../../shared/components/stat-card/stat-card';
-import { formatAmount, percentChange } from '../../../../shared/utils/currency.util';
+import { Card } from '@shared/components/card/card';
+import { EmptyState } from '@shared/components/empty-state/empty-state';
+import { StatCard } from '@shared/components/stat-card/stat-card';
+import { formatAmount, percentChange } from '@shared/utils/currency.util';
 import {
   buildCategoryBreakdownOptions,
   buildMonthlyTrendOptions,

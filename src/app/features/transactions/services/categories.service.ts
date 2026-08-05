@@ -1,9 +1,9 @@
 import { computed, inject, resource, Service } from '@angular/core';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { Category } from '../../../core/models/category.model';
-import { TransactionType } from '../../../core/models/transaction.model';
-import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
+import { AuthService } from '@core/auth/auth.service';
+import { Category } from '@core/models/category.model';
+import { TransactionType } from '@core/models/transaction.model';
+import { SupabaseClientService } from '@core/supabase/supabase-client.service';
 
 @Service()
 export class CategoriesService {

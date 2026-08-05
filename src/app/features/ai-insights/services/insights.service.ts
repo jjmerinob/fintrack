@@ -2,8 +2,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
-import { Insights, InsightsResponse, parseInsights } from '../../../core/models/insight.model';
+import { environment } from '@env/environment';
+import { Insights, InsightsResponse, parseInsights } from '@core/models/insight.model';
 
 const FUNCTION_URL = `${environment.supabaseUrl}/functions/v1/generate-insights`;
 

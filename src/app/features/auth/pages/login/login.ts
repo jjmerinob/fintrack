@@ -4,9 +4,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink } from '@angular/router';
 
-import { AuthService } from '../../../../core/auth/auth.service';
-import { PasswordField } from '../../../../shared/components/password-field/password-field';
-import { TextField } from '../../../../shared/components/text-field/text-field';
+import { AuthService } from '@core/auth/auth.service';
+import { PasswordField } from '@shared/components/password-field/password-field';
+import { TextField } from '@shared/components/text-field/text-field';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 
 @Component({

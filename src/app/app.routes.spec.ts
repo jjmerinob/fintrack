@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
-import { AuthService } from './core/auth/auth.service';
+import { AuthService } from '@core/auth/auth.service';
 import { routes } from './app.routes';
 
 /**

@@ -1,9 +1,9 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AuthService } from '../../../../core/auth/auth.service';
-import { Profile } from '../../../../core/models/profile.model';
-import { UserService } from '../../../../core/user/user.service';
+import { AuthService } from '@core/auth/auth.service';
+import { Profile } from '@core/models/profile.model';
+import { UserService } from '@core/user/user.service';
 import { Settings } from './settings';
 
 describe('Settings', () => {

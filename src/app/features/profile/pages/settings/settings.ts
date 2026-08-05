@@ -3,10 +3,10 @@ import { form, maxLength, required, submit } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { AuthService } from '../../../../core/auth/auth.service';
-import { UserService } from '../../../../core/user/user.service';
-import { Card } from '../../../../shared/components/card/card';
-import { TextField } from '../../../../shared/components/text-field/text-field';
+import { AuthService } from '@core/auth/auth.service';
+import { UserService } from '@core/user/user.service';
+import { Card } from '@shared/components/card/card';
+import { TextField } from '@shared/components/text-field/text-field';
 
 @Component({
   selector: 'app-settings',

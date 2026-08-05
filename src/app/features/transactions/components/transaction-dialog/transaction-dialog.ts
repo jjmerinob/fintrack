@@ -15,8 +15,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 
-import { Transaction, TransactionType } from '../../../../core/models/transaction.model';
-import { fromDateString, toDateString } from '../../../../shared/utils/date.util';
+import { Transaction, TransactionType } from '@core/models/transaction.model';
+import { fromDateString, toDateString } from '@shared/utils/date.util';
 import { CategoriesService } from '../../services/categories.service';
 import { TransactionsService } from '../../services/transactions.service';
 

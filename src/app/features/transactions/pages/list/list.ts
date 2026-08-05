@@ -13,15 +13,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime, firstValueFrom } from 'rxjs';
 
-import { Transaction } from '../../../../core/models/transaction.model';
-import {
-  ConfirmDialog,
-  ConfirmDialogData,
-} from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
-import { DIALOG_STYLE } from '../../../../shared/material/dialog.defaults';
-import { AmountPipe } from '../../../../shared/pipes/amount.pipe';
-import { fromDateString, toDateString } from '../../../../shared/utils/date.util';
+import { Transaction } from '@core/models/transaction.model';
+import { ConfirmDialog, ConfirmDialogData } from '@shared/components/confirm-dialog/confirm-dialog';
+import { EmptyState } from '@shared/components/empty-state/empty-state';
+import { DIALOG_STYLE } from '@shared/material/dialog.defaults';
+import { AmountPipe } from '@shared/pipes/amount.pipe';
+import { fromDateString, toDateString } from '@shared/utils/date.util';
 import {
   TransactionDialog,
   TransactionDialogData,

@@ -1,7 +1,7 @@
 import { EChartsCoreOption } from 'echarts/core';
 
-import { CategoryBreakdown, MonthlySummary } from '../../../core/models/dashboard.model';
-import { fromDateString } from '../../../shared/utils/date.util';
+import { CategoryBreakdown, MonthlySummary } from '@core/models/dashboard.model';
+import { fromDateString } from '@shared/utils/date.util';
 import {
   AXIS_COLOR,
   CATEGORY_COLOR,

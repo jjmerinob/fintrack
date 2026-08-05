@@ -1,7 +1,7 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Insights as InsightsContent } from '../../../../core/models/insight.model';
+import { Insights as InsightsContent } from '@core/models/insight.model';
 import { InsightsService } from '../../services/insights.service';
 import { Insights } from './insights';
 

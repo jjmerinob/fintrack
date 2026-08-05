@@ -1,13 +1,13 @@
 import { computed, inject, resource, Service, signal } from '@angular/core';
 
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService } from '@core/auth/auth.service';
 import {
   Transaction,
   TransactionInsert,
   TransactionType,
   TransactionUpdate,
-} from '../../../core/models/transaction.model';
-import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
+} from '@core/models/transaction.model';
+import { SupabaseClientService } from '@core/supabase/supabase-client.service';
 
 export type TransactionTypeFilter = TransactionType | 'all';
 

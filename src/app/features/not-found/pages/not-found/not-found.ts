@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 
-import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
+import { EmptyState } from '@shared/components/empty-state/empty-state';
 
 /**
  * Catch-all for URLs that match no route.

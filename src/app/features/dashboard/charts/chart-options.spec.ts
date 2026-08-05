@@ -1,4 +1,4 @@
-import { CategoryBreakdown, MonthlySummary } from '../../../core/models/dashboard.model';
+import { CategoryBreakdown, MonthlySummary } from '@core/models/dashboard.model';
 import { EXPENSE_COLOR, INCOME_COLOR, RING_GOOD_FILL, RING_OVER_FILL } from './chart-colors';
 import {
   buildCategoryBreakdownOptions,

@@ -12,7 +12,18 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    /* Import aliases per architectural layer. Beyond readability, these make the
+       boundaries visible at the import site: `@core/...` in a feature is
+       obviously allowed, while `@features/...` in core is obviously not — a
+       distinction that `../../../../` hides. They also survive moving a file. */
+    "paths": {
+      "@core/*": ["./src/app/core/*"],
+      "@shared/*": ["./src/app/shared/*"],
+      "@features/*": ["./src/app/features/*"],
+      "@env/*": ["./src/environments/*"],
+      "@testing/*": ["./src/testing/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

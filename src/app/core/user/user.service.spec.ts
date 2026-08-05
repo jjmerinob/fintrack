@@ -5,7 +5,7 @@ import { AuthService } from '../auth/auth.service';
 import { Profile } from '../models/profile.model';
 import { SupabaseClientService } from '../supabase/supabase-client.service';
 import { UserService } from './user.service';
-import { createQueryBuilder } from '../../../testing/supabase-mock';
+import { createQueryBuilder } from '@testing/supabase-mock';
 
 describe('UserService', () => {
   const profile: Profile = {

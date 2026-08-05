@@ -4,8 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { Card } from '../../../../shared/components/card/card';
-import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
+import { Card } from '@shared/components/card/card';
+import { EmptyState } from '@shared/components/empty-state/empty-state';
 import { InsightsService } from '../../services/insights.service';
 
 @Component({

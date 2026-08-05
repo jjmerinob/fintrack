@@ -2,7 +2,7 @@ import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env/environment';
 import { authInterceptor } from './auth.interceptor';
 import { AuthService } from '../auth.service';
 

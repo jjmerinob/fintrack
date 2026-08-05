@@ -1,9 +1,9 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { MonthlySummary } from '../../../core/models/dashboard.model';
-import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
+import { AuthService } from '@core/auth/auth.service';
+import { MonthlySummary } from '@core/models/dashboard.model';
+import { SupabaseClientService } from '@core/supabase/supabase-client.service';
 import { DashboardService } from './dashboard.service';
 
 describe('DashboardService', () => {

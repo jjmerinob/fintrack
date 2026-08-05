@@ -2,7 +2,7 @@ import { Directive, input, signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NgxEchartsDirective } from 'ngx-echarts';
 
-import { CategoryBreakdown, MonthlySummary } from '../../../../core/models/dashboard.model';
+import { CategoryBreakdown, MonthlySummary } from '@core/models/dashboard.model';
 import { DashboardService } from '../../services/dashboard.service';
 import { Overview } from './overview';
 

@@ -1,11 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { Transaction } from '../../../core/models/transaction.model';
-import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
+import { AuthService } from '@core/auth/auth.service';
+import { Transaction } from '@core/models/transaction.model';
+import { SupabaseClientService } from '@core/supabase/supabase-client.service';
 import { TransactionsService } from './transactions.service';
-import { createQueryBuilder } from '../../../../testing/supabase-mock';
+import { createQueryBuilder } from '@testing/supabase-mock';
 
 describe('TransactionsService', () => {
   const txn: Transaction = {

@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
-import { Category } from '../../../../core/models/category.model';
-import { Transaction } from '../../../../core/models/transaction.model';
+import { Category } from '@core/models/category.model';
+import { Transaction } from '@core/models/transaction.model';
 import { CategoriesService } from '../../services/categories.service';
 import { TransactionsService } from '../../services/transactions.service';
 import { List } from './list';

@@ -51,9 +51,14 @@ module.exports = defineConfig([
     files: ['src/app/**/*.ts'],
     plugins: { boundaries },
     settings: {
+      // The TypeScript resolver, not the plain node one, so `boundaries` can
+      // follow the `@core/*` style aliases from tsconfig.json. With the node
+      // resolver an aliased import resolves to nothing, and a rule that cannot
+      // resolve an import cannot classify it — the architecture checks would
+      // pass by simply never seeing the violations.
       'import/resolver': {
-        node: {
-          extensions: ['.ts', '.js'],
+        typescript: {
+          project: './tsconfig.json',
         },
       },
       'boundaries/elements': [

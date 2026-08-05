@@ -1,11 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { AuthService } from '../../../core/auth/auth.service';
-import { Category } from '../../../core/models/category.model';
-import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
+import { AuthService } from '@core/auth/auth.service';
+import { Category } from '@core/models/category.model';
+import { SupabaseClientService } from '@core/supabase/supabase-client.service';
 import { CategoriesService } from './categories.service';
-import { createQueryBuilder } from '../../../../testing/supabase-mock';
+import { createQueryBuilder } from '@testing/supabase-mock';
 
 describe('CategoriesService', () => {
   const groceries: Category = {

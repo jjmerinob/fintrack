@@ -7,9 +7,9 @@ import {
 } from '@angular/core';
 import { provideRouter, TitleStrategy } from '@angular/router';
 
-import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
-import { AuthService } from './core/auth/auth.service';
-import { AppTitleStrategy } from './core/routing/title.strategy';
+import { authInterceptor } from '@core/auth/interceptors/auth.interceptor';
+import { AuthService } from '@core/auth/auth.service';
+import { AppTitleStrategy } from '@core/routing/title.strategy';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
