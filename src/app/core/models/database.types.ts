@@ -164,8 +164,8 @@ export type Database = {
         Args: { months?: number };
         Returns: {
           month: string;
-          total_income: number;
           total_expense: number;
+          total_income: number;
         }[];
       };
     };
