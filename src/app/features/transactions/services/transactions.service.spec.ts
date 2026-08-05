@@ -5,36 +5,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { Transaction } from '../../../core/models/transaction.model';
 import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
 import { TransactionsService } from './transactions.service';
-
-/**
- * A minimal stand-in for Supabase's chainable, awaitable query builder. Every
- * method call (`.select()`, `.eq()`, `.order()`...) is recorded as a spy and
- * returns the same proxy, so a full chain both resolves to `{ data, error }`
- * (or `{ data, error, count }`) and lets tests assert which filters were
- * applied, e.g. `expect(query.eq).toHaveBeenCalledWith('type', 'expense')`.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- test-only chain mock
-function createQueryBuilder<T>(data: T, extra: Record<string, unknown> = {}): any {
-  const result = { data, error: null, ...extra };
-  const spies = new Map<string, ReturnType<typeof vi.fn>>();
-  const builder: Record<string, unknown> = {
-    then: (resolve: (value: typeof result) => unknown) => resolve(result),
-  };
-  const proxy = new Proxy(builder, {
-    get: (target, prop) => {
-      if (prop in target) return target[prop as string];
-      const name = prop as string;
-      if (!spies.has(name)) {
-        spies.set(
-          name,
-          vi.fn(() => proxy),
-        );
-      }
-      return spies.get(name);
-    },
-  });
-  return proxy;
-}
+import { createQueryBuilder } from '../../../../testing/supabase-mock';
 
 describe('TransactionsService', () => {
   const txn: Transaction = {

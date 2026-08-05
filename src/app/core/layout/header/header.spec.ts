@@ -61,6 +61,17 @@ describe('Header', () => {
     expect(overlayContainerElement.textContent).toContain('Ada Lovelace');
   });
 
+  it('should be the only way into the profile page, since the sidenav omits it', async () => {
+    fixture.nativeElement.querySelector('button[aria-label^="Account menu"]').click();
+    await fixture.whenStable();
+
+    const profileLink = [...overlayContainerElement.querySelectorAll('a')].find((a) =>
+      a.textContent?.includes('Profile'),
+    );
+
+    expect(profileLink?.getAttribute('href')).toBe('/profile');
+  });
+
   it('should log out and navigate to the login page from the account menu', async () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 

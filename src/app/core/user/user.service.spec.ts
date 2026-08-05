@@ -5,35 +5,7 @@ import { AuthService } from '../auth/auth.service';
 import { Profile } from '../models/profile.model';
 import { SupabaseClientService } from '../supabase/supabase-client.service';
 import { UserService } from './user.service';
-
-/**
- * A minimal stand-in for Supabase's chainable, awaitable query builder. Every
- * method (`.select()`, `.eq()`, `.single()`...) is recorded as a spy and returns
- * the same proxy, so a full chain resolves to `{ data, error }` and tests can
- * assert which calls were made.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- test-only chain mock
-function createQueryBuilder<T>(data: T, error: unknown = null): any {
-  const result = { data, error };
-  const spies = new Map<string, ReturnType<typeof vi.fn>>();
-  const builder: Record<string, unknown> = {
-    then: (resolve: (value: typeof result) => unknown) => resolve(result),
-  };
-  const proxy = new Proxy(builder, {
-    get: (target, prop) => {
-      if (prop in target) return target[prop as string];
-      const name = prop as string;
-      if (!spies.has(name)) {
-        spies.set(
-          name,
-          vi.fn(() => proxy),
-        );
-      }
-      return spies.get(name);
-    },
-  });
-  return proxy;
-}
+import { createQueryBuilder } from '../../../testing/supabase-mock';
 
 describe('UserService', () => {
   const profile: Profile = {
@@ -151,7 +123,7 @@ describe('UserService', () => {
     const service = createService(from);
     await settle();
 
-    from.mockReturnValueOnce(createQueryBuilder(null, new Error('RLS violation')));
+    from.mockReturnValueOnce(createQueryBuilder(null, { error: new Error('RLS violation') }));
 
     await expect(service.updateProfile({ full_name: 'Ada L.' })).rejects.toThrow('RLS violation');
     expect(service.displayName()).toBe('Ada Lovelace');

@@ -123,6 +123,65 @@ describe('List', () => {
     expect(transactionsService.setCategoryFilter).toHaveBeenCalledWith('all');
   });
 
+  describe('search', () => {
+    /** One debounce window plus a margin, so the pending emission has landed. */
+    const AFTER_DEBOUNCE_MS = 350;
+
+    function typeSearch(value: string): void {
+      const input: HTMLInputElement = fixture.nativeElement.querySelector(
+        'input[matinput]:not([type=number])',
+      );
+      input.value = value;
+      input.dispatchEvent(new Event('input'));
+    }
+
+    async function wait(ms: number): Promise<void> {
+      await new Promise((resolve) => setTimeout(resolve, ms));
+      await fixture.whenStable();
+    }
+
+    it('should not hit the service on every keystroke', async () => {
+      await setUp();
+      await wait(AFTER_DEBOUNCE_MS);
+      transactionsService.setSearch.mockClear();
+
+      typeSearch('s');
+      typeSearch('su');
+      typeSearch('sup');
+      await fixture.whenStable();
+
+      // Each of those would have been a separate Supabase round-trip before.
+      expect(transactionsService.setSearch).not.toHaveBeenCalled();
+    });
+
+    it('should send only the final term once typing pauses', async () => {
+      await setUp();
+      await wait(AFTER_DEBOUNCE_MS);
+      transactionsService.setSearch.mockClear();
+
+      typeSearch('s');
+      typeSearch('su');
+      typeSearch('sup');
+      await wait(AFTER_DEBOUNCE_MS);
+
+      expect(transactionsService.setSearch).toHaveBeenCalledTimes(1);
+      expect(transactionsService.setSearch).toHaveBeenCalledWith('sup');
+    });
+
+    it('should keep showing what was typed while the term is still pending', async () => {
+      await setUp();
+      typeSearch('coffee');
+      await fixture.whenStable();
+
+      const input: HTMLInputElement = fixture.nativeElement.querySelector(
+        'input[matinput]:not([type=number])',
+      );
+      // The field binds to the local signal, not the service's debounced value,
+      // so the text must not disappear during the pause.
+      expect(input.value).toBe('coffee');
+    });
+  });
+
   it('should forward paginator events to the service', async () => {
     transactionsService.transactions.mockReturnValue([txn]);
     transactionsService.totalCount.mockReturnValue(30);

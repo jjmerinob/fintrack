@@ -5,20 +5,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { Category } from '../../../core/models/category.model';
 import { SupabaseClientService } from '../../../core/supabase/supabase-client.service';
 import { CategoriesService } from './categories.service';
-
-/** A minimal stand-in for Supabase's chainable, awaitable query builder. Every
- *  method (`.select()`, `.eq()`, `.order()`...) returns the proxy itself, so
- *  any chain resolves to the same fixed `{ data, error }` result. */
-function queryResult<T>(data: T, error: unknown = null) {
-  const result = { data, error };
-  const builder: Record<string, unknown> = {
-    then: (resolve: (value: typeof result) => unknown) => resolve(result),
-  };
-  const proxy: unknown = new Proxy(builder, {
-    get: (target, prop) => (prop in target ? target[prop as string] : () => proxy),
-  });
-  return proxy;
-}
+import { createQueryBuilder } from '../../../../testing/supabase-mock';
 
 describe('CategoriesService', () => {
   const groceries: Category = {
@@ -39,7 +26,7 @@ describe('CategoriesService', () => {
   };
 
   function createService(categories: Category[]): CategoriesService {
-    const from = vi.fn().mockReturnValue(queryResult(categories));
+    const from = vi.fn().mockReturnValue(createQueryBuilder(categories));
 
     TestBed.configureTestingModule({
       providers: [

@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,6 +11,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { debounceTime, firstValueFrom } from 'rxjs';
 
 import { Transaction } from '../../../../core/models/transaction.model';
 import {
@@ -17,6 +19,7 @@ import {
   ConfirmDialogData,
 } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { EmptyState } from '../../../../shared/components/empty-state/empty-state';
+import { DIALOG_STYLE } from '../../../../shared/material/dialog.defaults';
 import { AmountPipe } from '../../../../shared/pipes/amount.pipe';
 import { fromDateString, toDateString } from '../../../../shared/utils/date.util';
 import {
@@ -26,9 +29,8 @@ import {
 import { CategoriesService } from '../../services/categories.service';
 import { TransactionsService, TransactionTypeFilter } from '../../services/transactions.service';
 
-// Darker, blurred backdrop than Material's default (~32% black, no blur),
-// so the dialog doesn't leave the list clearly readable behind it.
-const DIALOG_STYLE = { backdropClass: 'app-dialog-backdrop', panelClass: 'app-dialog-panel' };
+/** Long enough to swallow a burst of typing, short enough to still feel live. */
+const SEARCH_DEBOUNCE_MS = 300;
 
 @Component({
   selector: 'app-list',
@@ -86,8 +88,25 @@ export class List {
     this.transactionsService.setCategoryFilter(categoryId);
   }
 
+  /**
+   * What the user has typed so far. Kept local and pushed to the service only
+   * after a pause, because every change of the service's filter re-runs the
+   * query: without this, typing "supermarket" fired eleven requests whose
+   * results were all thrown away.
+   *
+   * The input binds to this signal rather than to the service's debounced value,
+   * so the field always shows the keystrokes immediately.
+   */
+  protected readonly searchTerm = signal(this.transactionsService.search());
+
+  constructor() {
+    toObservable(this.searchTerm)
+      .pipe(debounceTime(SEARCH_DEBOUNCE_MS), takeUntilDestroyed())
+      .subscribe((value) => this.transactionsService.setSearch(value));
+  }
+
   protected onSearchInput(value: string): void {
-    this.transactionsService.setSearch(value);
+    this.searchTerm.set(value);
   }
 
   protected readonly dateFromValue = computed(() => {
@@ -145,11 +164,7 @@ export class List {
       },
     });
 
-    const confirmed = await new Promise<boolean>((resolve) => {
-      ref.afterClosed().subscribe((result) => resolve(!!result));
-    });
-
-    if (confirmed) {
+    if (await firstValueFrom(ref.afterClosed())) {
       await this.transactionsService.delete(transaction.id);
     }
   }

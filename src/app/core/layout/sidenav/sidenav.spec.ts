@@ -23,7 +23,9 @@ describe('Sidenav', () => {
       a.getAttribute('href'),
     );
 
-    expect(hrefs).toEqual(['/dashboard', '/transactions', '/ai-insights', '/profile']);
+    // Profile is deliberately absent: it is reached from the account menu in the
+    // header instead, so it is not repeated here. See `header.spec.ts`.
+    expect(hrefs).toEqual(['/dashboard', '/transactions', '/ai-insights']);
   });
 
   it('should emit when a link is clicked, so the shell can close the mobile overlay', () => {

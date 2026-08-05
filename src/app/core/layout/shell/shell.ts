@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterOutlet } from '@angular/router';
@@ -26,7 +26,7 @@ export class Shell {
     { initialValue: false },
   );
 
-  protected readonly sidenavMode = () => (this.isDesktop() ? 'side' : 'over');
+  protected readonly sidenavMode = computed(() => (this.isDesktop() ? 'side' : 'over'));
   protected readonly sidenavOpened = signal(false);
 
   constructor() {

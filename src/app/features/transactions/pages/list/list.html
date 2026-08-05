@@ -35,7 +35,7 @@
       <input
         matInput
         #searchInput
-        [value]="transactionsService.search()"
+        [value]="searchTerm()"
         (input)="onSearchInput(searchInput.value)"
       />
     </mat-form-field>
