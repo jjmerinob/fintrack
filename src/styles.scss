@@ -45,9 +45,10 @@ html.dark {
   --color-expense: #f87171;
 }
 
-// Applied via provideDialogDefaults() (shared/material/dialog.defaults.ts). The
-// backdrop element is appended outside any component's view, so it can only
-// be targeted with a global, unencapsulated style like this one.
+// Applied through the DIALOG_STYLE constant (shared/material/dialog.defaults.ts),
+// which every `dialog.open()` call spreads in. The backdrop element is appended
+// outside any component's view, so it can only be targeted with a global,
+// unencapsulated style like this one.
 .app-dialog-backdrop {
   background-color: rgb(0 0 0 / 60%);
   backdrop-filter: blur(4px);
