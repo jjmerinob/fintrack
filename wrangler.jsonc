@@ -14,6 +14,12 @@
     // router take it from there. Without this, opening /transactions directly —
     // a bookmark, a shared link, a refresh — returns 404, because routing only
     // happens once index.html has loaded in the browser.
+    //
+    // This replaces the `public/_redirects` file that Cloudflare Pages, Netlify
+    // and friends use for the same purpose. Do not add both: Workers reads
+    // `_redirects` too, and reads `/* -> /index.html 200` as an infinite loop,
+    // which fails the deploy outright. If this ever moves to Netlify, drop this
+    // key and add the `_redirects` file back.
     "not_found_handling": "single-page-application"
   }
 }
