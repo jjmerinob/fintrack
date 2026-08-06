@@ -112,6 +112,21 @@ as $$
       end as baseline_avg
     from category_baseline cb
   ),
+  category_paced as (
+    select
+      cs.*,
+      -- What this category would normally have cost by this point in the month.
+      --
+      -- Without it, the only comparison available is a part-month total against a
+      -- full-month average, which is not a like-for-like: five days into the
+      -- month everything looks "below baseline", and spending a whole month's
+      -- worth of transport in those five days reads as *good news*.
+      case
+        when cs.baseline_avg is null then null
+        else round(cs.baseline_avg * bounds.days_elapsed / bounds.days_total, 2)
+      end as expected_to_date
+    from category_stats cs, bounds
+  ),
   projection as (
     select
       case
@@ -164,16 +179,32 @@ as $$
             else format_eur(cs.baseline_avg)
           end,
           'baseline_months_observed', cs.baseline_months_observed,
+          -- Whole month against a typical whole month. Only a fair comparison
+          -- once the month is essentially over.
           'deviation_pct', case
             when cs.baseline_months_observed >= settings.min_baseline_months
              and cs.baseline_avg > 0
               then round((cs.total - cs.baseline_avg) / cs.baseline_avg * 100)
             else null
+          end,
+          'expected_to_date', cs.expected_to_date,
+          'expected_to_date_formatted', case
+            when cs.expected_to_date is null then null
+            else format_eur(cs.expected_to_date)
+          end,
+          -- Spend so far against what is normal *by now*: 100 is exactly on
+          -- track, 200 is twice the usual pace. This is the fair mid-month
+          -- reading, and the one worth leading with.
+          'pace_pct', case
+            when cs.baseline_months_observed >= settings.min_baseline_months
+             and cs.expected_to_date > 0
+              then round(cs.total / cs.expected_to_date * 100)
+            else null
           end
         )
         order by cs.total desc
       )
-      from category_stats cs, settings
+      from category_paced cs, settings
       where cs.total > 0 or cs.baseline_avg > 0
     ), '[]'::jsonb)
   )
